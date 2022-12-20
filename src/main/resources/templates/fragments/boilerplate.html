@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: header"></head>
+<body class="d-flex flex-column vh-100">
+    <nav th:replace="fragments/navbar.html :: navbar"></nav>
+    <main class="container mt-5">
+        <div th:unless="${#strings.isEmpty(success) && #strings.isEmpty(error)}" th:remove="tag">
+            <div th:replace="${#strings.isEmpty(success)} ?
+                ~{fragments/flash.html :: error} :
+                ~{fragments/flash.html :: success}">
+            </div>
+        </div>
+        <!-- Body goes here-->
+    </main>
+    <footer th:replace="fragments/footer.html :: footer"></footer>
+    <script src="/js/bootstrap.min.js"></script>
+</body>
+</html>

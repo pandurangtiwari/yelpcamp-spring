@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: header"></head>
+<body class="d-flex flex-column vh-100">
+    <nav th:replace="fragments/navbar.html :: navbar"></nav>
+    <main class="container mt-5">
+        <div th:unless="${#strings.isEmpty(success) && #strings.isEmpty(error)}" th:remove="tag">
+            <div th:replace="${#strings.isEmpty(success)} ?
+                    ~{fragments/flash.html :: error} :
+                    ~{fragments/flash.html :: success}">
+            </div>
+        </div>
+        <div class="container d-flex justify-content-center align-items-center my-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+                    <div class="card shadow">
+                        <img src="https://images.unsplash.com/photo-1571863533956-01c88e79957e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1267&q=80"
+                             alt="" class="card-img-top" />
+                        <div class="card-body">
+                            <h5 class="card-title">Register</h5>
+                            <form th:action="@{/register}" method="POST" th:object="${user}" class="validated-form" novalidate>
+                                <div class="mb-3">
+                                    <label class="form-label" for="name">Name</label>
+                                    <input class="form-control" type="text" th:field="*{name}" id="name" required/>
+                                    <div class="valid-feedback">Looks good!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="email">Email</label>
+                                    <input class="form-control" type="email" th:field="*{email}" id="email" required/>
+                                    <div class="valid-feedback">Looks good!</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="password">Password</label>
+                                    <input class="form-control" type="password" th:field="*{password}" id="password" required/>
+                                    <div class="valid-feedback">Looks good!</div>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-success">Register</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="fragments/footer.html :: footer"></footer>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/validateForm.js"></script>
+</body>
+</html>

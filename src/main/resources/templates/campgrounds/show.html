@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: header"></head>
+<body class="d-flex flex-column vh-100">
+    <nav th:replace="fragments/navbar.html :: navbar"></nav>
+    <main class="container mt-5">
+        <div th:unless="${#strings.isEmpty(success) && #strings.isEmpty(error)}" th:remove="tag">
+            <div th:replace="${#strings.isEmpty(success)} ?
+            ~{fragments/flash.html :: error} :
+            ~{fragments/flash.html :: success}"></div>
+        </div>
+
+        <link rel="stylesheet" href="/css/stars.css">
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <div id="campgorundCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div th:each="img : ${campground.images}" th:remove="tag">
+                            <div th:class="${imgStat.index == 0} ? 'carousel-item active' : 'carousel-item'">
+                                <img th:src="${img.url}" class="d-block w-100" alt="Campground Image">
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${campground.images.size() > 1}" th:remove="tag">
+                        <button class="carousel-control-prev" type="button" data-bs-target="#campgorundCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#campgorundCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 th:text="${campground.title}" class="card-title"></h5>
+                        <p th:text="${campground.description}" class="card-text"></p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li th:text="${campground.location}" class="list-group-item text-muted"></li>
+                        <li class="list-group-item" th:text="${#strings.concat('Submitted By ', campground.author.name)}"></li>
+                        <li th:text="${#strings.concat('Rs ', campground.price, '/night')}" class="list-group-item"></li>
+                    </ul>
+                    <div sec:authorize="isAuthenticated()" th:remove="tag">
+                        <div class="card-body" th:if="${#authentication.principal.id.equals(campground.author.id)}">
+                            <a
+                                    class="card-link btn btn-info"
+                                    th:href="@{'/campgrounds/' + ${campground.id} + '/edit'}"
+                            >Edit</a
+                            >
+                            <form
+                                    class="d-inline"
+                                    action="#"
+                                    th:action="@{'/campgrounds/' + ${campground.id}}"
+                                    th:method="DELETE"
+                            >
+                                <button class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div sec:authorize="isAuthenticated()" th:remove="tag">
+                    <h2>Leave a Review</h2>
+                    <form
+                            th:action="@{'/campgrounds/' + ${campground.id} + '/reviews'}"
+                            th:object="${newReview}"
+                            method="POST"
+                            class="mb-3 validated-form"
+                            novalidate
+                    >
+                        <div class="mb-3">
+                            <fieldset class="starability-basic">
+                                <input type="radio" id="no-rate" class="input-no-rate" checked value="1" name="rating" aria-label="No rating." />
+                                <input type="radio" id="first-rate1" th:field="*{rating}" value="1" />
+                                <label for="first-rate1" title="Terrible">1 star</label>
+                                <input type="radio" id="first-rate2" th:field="*{rating}" value="2" />
+                                <label for="first-rate2" title="Not good">2 stars</label>
+                                <input type="radio" id="first-rate3" th:field="*{rating}" value="3" />
+                                <label for="first-rate3" title="Average">3 stars</label>
+                                <input type="radio" id="first-rate4" th:field="*{rating}" value="4" />
+                                <label for="first-rate4" title="Very good">4 stars</label>
+                                <input type="radio" id="first-rate5" th:field="*{rating}" value="5" />
+                                <label for="first-rate5" title="Amazing">5 stars</label>
+                            </fieldset>
+                        </div>
+                        <div class="mb-3">
+                            <label for="body" class="form-label">Review Text</label>
+                            <textarea
+                                    class="form-control"
+                                    th:field="*{body}"
+                                    id="body"
+                                    cols="30"
+                                    rows="3"
+                                    required
+                            ></textarea>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-success">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+
+                <div th:each="review: ${reviews}" th:remove="tag">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${review.author.name}"></h5>
+
+                            <p class="starability-result" th:data-rating="${review.rating}"
+                                th:text="${#strings.concat('Rated: ', review.rating, ' stars')}">
+                            </p>
+                            <p class="card-text" th:text="${#strings.concat('Review : ', review.body)}"></p>
+                            <div sec:authorize="isAuthenticated()" th:remove="tag">
+                                <form th:method="DELETE"
+                                      th:action="@{'/campgrounds/' + ${campground.id} + '/reviews/' + ${review.id}}"
+                                      th:if="${#authentication.principal.id.equals(review.author.id)}">
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="fragments/footer.html :: footer"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/validateForm.js"></script>
+</body>
+</html>

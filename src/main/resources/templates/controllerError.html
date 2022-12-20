@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: header"></head>
+<body class="d-flex flex-column vh-100">
+    <nav th:replace="fragments/navbar.html :: navbar"></nav>
+    <main class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="alert alert-danger" role="alert">
+                    <p class="h4 alert-heading" th:text="${error.message}"></p>
+                    <div th:unless="${#strings.equals('PRODUCTION', @environment.getProperty('env'))}">
+                        <p th:unless="${error.cause == null}" th:text="${error.cause}"></p>
+                        <ul th:remove="tag">
+                            <li th:each="ste : ${#objects.nullSafe(error.cause, error).stackTrace}" th:remove="tag">
+                                <span th:utext="${ste}" th:remove="tag">${ste}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+</main>
+<footer th:replace="fragments/footer.html :: footer"></footer>
+<script src="/js/bootstrap.min.js"></script>
+</body>
+</html>

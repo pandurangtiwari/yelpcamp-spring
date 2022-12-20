@@ -1,0 +1,12 @@
+.btn-link.btn-anchor {
+    outline: none !important;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-link.btn-anchor:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
